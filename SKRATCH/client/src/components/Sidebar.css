@@ -1,0 +1,8 @@
+.sidebar {
+  max-width: 220px;
+  border: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__subitem---text {
+  font-size: 0.8rem;
+}
