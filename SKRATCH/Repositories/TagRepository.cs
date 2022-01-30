@@ -45,17 +45,31 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
-		public void Add(Tag tag)
+		public int Add(Tag tag)
 		{
 			using (SqlConnection conn = Connection)
 			{
 				conn.Open();
 				using (SqlCommand cmd = conn.CreateCommand())
 				{
-					cmd.CommandText = @"INSERT INTO Tag (Name)
-                                                     VALUES (@Name)";
+					cmd.CommandText = @"INSERT INTO Tag (Name, UserId, IsUserCreated, IsStatus)
+									    OUTPUT INSERTED.ID
+                                        VALUES (@Name, @UserId, @IsUserCreated, 0)";
+
 					cmd.Parameters.AddWithValue("@Name", tag.Name);
-					cmd.ExecuteNonQuery();
+					cmd.Parameters.AddWithValue("@UserId", tag.UserId);
+					if(tag.IsUserCreated){
+						cmd.Parameters.AddWithValue("@IsUserCreated", 1);
+					}
+					else
+					{
+						cmd.Parameters.AddWithValue("@IsUserCreated", 0);
+					}
+
+					tag.Id = (int)cmd.ExecuteScalar();
+
+					return tag.Id;
+
 				}
 			}
 		}

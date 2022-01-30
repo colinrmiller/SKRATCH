@@ -5,7 +5,7 @@ namespace SKRATCH.Repositories
 {
 	public interface INoteRepository
 	{
-		void Add(Note Note);
+		int Add(Note Note);
 		void Delete(int id);
 		List<Note> GetNoteById(int id);
 		List<Note> GetNotesByTagId(int id);

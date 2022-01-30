@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace SKRATCH.Controllers
 {
+	[Route("api/[controller]")]
+	[ApiController]
 	public class TagController : Controller
 	{
 		private readonly ITagRepository _TagRepository;
@@ -19,12 +21,11 @@ namespace SKRATCH.Controllers
 			_TagRepository = TagRepository;
 		}
 
-		// GET: api/<TagController>?userId=1
-		[HttpGet]
-		public IActionResult Index(int userId)
+		// GET: api/<TagController>/TagsByUserId/1
+		[HttpGet("TagsByUserId/{id}")]
+		public IActionResult TagsByUserId(int id)
 		{
-
-			var notes = _TagRepository.GetAllUserTags(userId);
+			var notes = _TagRepository.GetAllUserTags(id);
 			return Ok(notes);
 		}
 
@@ -46,10 +47,10 @@ namespace SKRATCH.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Post(Tag note)
+		public IActionResult Post(Tag tag)
 		{
-			_TagRepository.Add(note);
-			return NoContent();
+			int insertedId = _TagRepository.Add(tag);
+			return Ok(insertedId);
 		}
 
 		// PUT api/<TagController>/5

@@ -40,7 +40,7 @@ namespace SKRATCH.Repositories
                               LEFT JOIN NoteTag nt ON nt.NoteId = n.id
                               LEFT JOIN Tag t ON t.Id = nt.TagId
                         WHERE n.UserId = @userId
-                        ORDER BY DateUpdated DESC";
+                        ORDER BY DateAdded DESC";
 
 					cmd.Parameters.AddWithValue("@userId", id);
 
@@ -218,7 +218,7 @@ namespace SKRATCH.Repositories
 			}
 		}
 
-		public void Add(Note Note)
+		public int Add(Note Note)
 		{
 			using (var conn = Connection)
 			{
@@ -255,6 +255,7 @@ namespace SKRATCH.Repositories
 					}
 
 					Note.Id = (int)cmd.ExecuteScalar();
+					return Note.Id;
 				}
 			}
 		}

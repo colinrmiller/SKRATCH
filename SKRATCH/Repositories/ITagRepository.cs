@@ -6,7 +6,7 @@ namespace SKRATCH.Repositories
 	public interface ITagRepository
 	{
 		void AddTagToNote(NoteTag noteTag);
-		void Add(Tag tag);
+		int Add(Tag tag);
 		void Delete(int id);
 		List<Tag> GetAllUserTags(int userId);
 		Tag GetTagById(int id);

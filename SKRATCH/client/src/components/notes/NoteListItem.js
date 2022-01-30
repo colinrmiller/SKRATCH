@@ -50,7 +50,7 @@ function NoteListItem({
 
   return (
     <div className="notelist--item">
-      <ListItem button dense {...rest}>
+      <ListItem button dense>
         <textarea
           value={content}
           className="notelist--item__text"

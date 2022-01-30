@@ -1,4 +1,4 @@
-﻿ using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SKRATCH.Models;
 using SKRATCH.Repositories;
 using System;
@@ -61,8 +61,8 @@ namespace SKRATCH.Controllers
 		{
 			note.DateAdded = DateTime.Now;
 			note.DateUpdated = DateTime.Now;
-			_NoteRepository.Add(note);
-			return NoContent();
+			int noteId = _NoteRepository.Add(note);
+			return Ok(noteId);
 		}
 
 		// PUT api/<NoteController>/5

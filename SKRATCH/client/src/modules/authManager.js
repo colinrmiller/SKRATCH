@@ -36,16 +36,13 @@ const _saveUser = (User) => {
 export const getToken = () => firebase.auth().currentUser.getIdToken();
 
 export const login = (email, pw) => {
-  // debugger;
   return firebase
     .auth()
     .signInWithEmailAndPassword(email, pw)
     .then((signInResponse) => {
-      // debugger;
       return _doesUserExist(signInResponse.user.uid);
     })
     .then((doesUserExist) => {
-      // debugger;
       if (!doesUserExist) {
         // If we couldn't find the user in our app's database, we should logout of firebase
         logout();

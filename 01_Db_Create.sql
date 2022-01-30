@@ -65,8 +65,8 @@ CREATE TABLE [NoteTag] (
   [NoteId] int NOT NULL,
   [TagId] int NOT NULL,
 
-  CONSTRAINT [FK_NoteTag_Note] FOREIGN KEY ([NoteId]) REFERENCES [Note] ([Id]),
-  CONSTRAINT [FK_NoteTag_Tag] FOREIGN KEY ([TagId]) REFERENCES [Tag] ([Id]),
+  CONSTRAINT [FK_NoteTag_Note] FOREIGN KEY ([NoteId]) REFERENCES [Note] ([Id]) ON DELETE CASCADE,
+  CONSTRAINT [FK_NoteTag_Tag] FOREIGN KEY ([TagId]) REFERENCES [Tag] ([Id]) ON DELETE CASCADE,
 
 )
 GO
@@ -79,7 +79,7 @@ CREATE TABLE [TagDependency] (
   [ParentTagId] int,
   [ChildTagId] int,
 
-  CONSTRAINT [FK_TagDependency_Note] FOREIGN KEY ([ParentTagId]) REFERENCES [Tag] ([Id]),
-  CONSTRAINT [FK_TagDependency_Tag] FOREIGN KEY ([ChildTagId]) REFERENCES [Tag] ([Id]),
+  CONSTRAINT [FK_TagDependency_ParentTag] FOREIGN KEY ([ParentTagId]) REFERENCES [Tag] ([Id]) ON DELETE NO ACTION,
+  CONSTRAINT [FK_TagDependency_ChildTag] FOREIGN KEY ([ChildTagId]) REFERENCES [Tag] ([Id]) ON DELETE NO ACTION,
 )
 GO

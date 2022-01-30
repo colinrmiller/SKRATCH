@@ -117,6 +117,21 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
+		public void ClearNoteTags(int noteId)
+		{
+			using (SqlConnection conn = Connection)
+			{
+				conn.Open();
+				using (SqlCommand cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = @"DELETE FROM NoteTag WHERE noteId = @noteId";
+					cmd.Parameters.AddWithValue("@noteId", noteId);
+
+					cmd.ExecuteNonQuery();
+				}
+			}
+		}
+
 
 		public void clearNoteTagsForNote(int NoteId)
 		{

@@ -1,21 +1,42 @@
-const baseUrl = "/api/note";
+const baseUrl = "/api/tag";
 
 export const getUserTags = (userId) => {
-  return fetch(`baseUrl?userId=${userId}`).then((res) => res.json());
+  return fetch(`${baseUrl}/TagsByUserId/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
 };
 
-// export const addTags = (note) => {
-//   if (note.userProfile.userType.name == "Admin") {
-//     note.isApproved = true;
-//   }
-//   return fetch(baseUrl, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(note),
-//   });
-// };
+export const addTag = (tag) => {
+  return fetch(baseUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(tag),
+  }).then((res) => res.json());
+};
+
+export const addNoteTag = (noteTag) => {
+  return fetch("/api/notetag/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(noteTag),
+  });
+};
+
+export const removeNoteTags = (noteId) => {
+  return fetch(`/api/notetag/clearnote/${noteId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 
 // export const getBySearch = (q, isSort) => {
 //   return fetch(baseUrl + `/search?q=${q}&sortDesc=${isSort}`, {

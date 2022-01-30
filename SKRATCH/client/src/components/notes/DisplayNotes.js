@@ -28,7 +28,9 @@ function DisplayNotes() {
 
   const handleUpdateNotes = (event) => {
     event.preventDefault();
-    setShouldUpdateNotes(true).then(setShouldUpdateNotes(false));
+    setShouldUpdateNotes((value) => !value);
+    // setShouldUpdateNotes(false);
+    // setTimeout(setShouldUpdateNotes(false), 100);
   };
 
   const handleNewNote = () => {
@@ -44,12 +46,12 @@ function DisplayNotes() {
       <NoteList notes={notes} shouldUpdateNotes={shouldUpdateNotes} />
       <NewNote
         isDisplaying={isDisplayingNewNote}
-        shouldUpdateNotes={shouldUpdateNotes && isDisplayingNewNote}
+        shouldSubmit={shouldUpdateNotes}
       />
       <div className="notes-container--interaction">
         <button onClick={handleUpdateNotes}>Update</button>
         {isDisplayingNewNote ? (
-          <button onClick={handleNewNoteCancel}>cancel</button>
+          <button onClick={handleNewNoteCancel}>Cancel</button>
         ) : (
           <button onClick={handleNewNote}>New Note</button>
         )}

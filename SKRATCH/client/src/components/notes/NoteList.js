@@ -12,7 +12,7 @@ function NoteList({ notes, depthStep, depth, shouldUpdateNotes }) {
       <List disablePadding dense>
         {notes.map((note, index) => (
           <NoteListItem
-            key={`${note.Id}`}
+            key={`${note.id}`}
             note={note}
             depthStep={depthStep}
             depth={depth}

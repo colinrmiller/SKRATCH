@@ -1,3 +1,4 @@
+import { ParseNoteTags, isContentNull } from "../utils/utils";
 const baseUrl = "/api/note";
 
 export const getUserNotes = (userId) => {
@@ -7,23 +8,40 @@ export const getUserNotes = (userId) => {
 };
 
 export const updateNote = (note) => {
-  return fetch(`${baseUrl}/${note.id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(note),
-  });
+  if (isContentNull(note.content)) {
+    return fetch(`${baseUrl}/${note.id} `, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(note),
+    });
+  } else {
+    return fetch(`${baseUrl}/${note.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(note),
+    });
+  }
 };
 
 export const addNote = (note) => {
+  const noteCopy = { ...note };
+  noteCopy.content = noteCopy.content += "\n";
+
+  const noteTags = ParseNoteTags(noteCopy.content);
+
   return fetch(baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(note),
-  });
+    body: JSON.stringify(noteCopy),
+  }).then((res) => res.json());
+
+  //
 };
 
 // export const getBySearch = (q, isSort) => {
