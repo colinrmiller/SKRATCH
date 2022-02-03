@@ -12,5 +12,7 @@ namespace SKRATCH.Repositories
 		Tag GetTagById(int id);
 		List<Tag> GetTagsByNoteId(int id);
 		void Update(Tag tag);
+		List<Tag> GetAllUserTagsByType(int userId, string type);
+		List<Tag> GetPriorityTags();
 	}
 }

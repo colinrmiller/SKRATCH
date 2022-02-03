@@ -13,6 +13,7 @@ namespace SKRATCH.Repositories
 	{
 
 		public TagRepository(IConfiguration config) : base(config) { }
+
 		public List<Tag> GetAllUserTags(int userId)
 		{
 			using (var conn = Connection)
@@ -45,6 +46,39 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
+
+		public List<Tag> GetAllUserTagsByType(int userId, string type)
+		{
+			using (var conn = Connection)
+			{
+				conn.Open();
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = @"
+                      Select * from Tag
+					  Where (UserId = @userId OR IsUserCreated = 0) 
+						AND (Type = @type) 
+					
+                        ORDER BY name ASC";
+
+					cmd.Parameters.AddWithValue("@userId", userId);
+					cmd.Parameters.AddWithValue("@type", type);
+
+					var reader = cmd.ExecuteReader();
+
+					var tags = new List<Tag>();
+					while (reader.Read())
+					{
+						tags.Add(NewTagFromReader(reader));
+					}
+
+					reader.Close();
+
+					return tags;
+				}
+			}
+		}
+
 		public int Add(Tag tag)
 		{
 			using (SqlConnection conn = Connection)
@@ -73,6 +107,7 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
+		
 		public Tag GetTagById(int id)
 		{
 			using (SqlConnection conn = Connection)
@@ -173,6 +208,7 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
+		
 		public void Delete(int id)
 		{
 			using (SqlConnection conn = Connection)
@@ -183,6 +219,37 @@ namespace SKRATCH.Repositories
 					cmd.CommandText = @"DELETE FROM Tag WHERE id = @id";
 					cmd.Parameters.AddWithValue("@id", id);
 					cmd.ExecuteNonQuery();
+				}
+			}
+		}
+
+		public List<Tag> GetPriorityTags()
+		{
+			using (var conn = Connection)
+			{
+				conn.Open();
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = @"
+                      Select * from Tag
+					  Where Type = 'Priority'
+                        ORDER BY name ASC";
+
+					var reader = cmd.ExecuteReader();
+
+					var tags = new List<Tag>();
+					while (reader.Read())
+					{
+						tags.Add(new Tag()
+						{
+							Id = reader.GetInt32(reader.GetOrdinal("Id")),
+							Name = reader.GetString(reader.GetOrdinal("name")),
+						});
+					}
+
+					reader.Close();
+
+					return tags;
 				}
 			}
 		}

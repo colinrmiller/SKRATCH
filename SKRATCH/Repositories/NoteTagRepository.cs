@@ -93,9 +93,9 @@ namespace SKRATCH.Repositories
 				using (SqlCommand cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = @"INSERT INTO NoteTag (NoteId, TagId) OUTPUT INSERTED.ID
-                                                     VALUES (@NoteId, @tagId)";
+                                                     VALUES (@NoteId, @TagId)";
 					cmd.Parameters.AddWithValue("@NoteId", NoteTag.NoteId);
-					cmd.Parameters.AddWithValue("@tagId", NoteTag.TagId);
+					cmd.Parameters.AddWithValue("@TagId", NoteTag.TagId);
 
 					int id = (int)cmd.ExecuteScalar();
 
@@ -117,15 +117,16 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
-		public void ClearNoteTags(int noteId)
+		public void ClearNoteTag(NoteTag noteTag)
 		{
 			using (SqlConnection conn = Connection)
 			{
 				conn.Open();
 				using (SqlCommand cmd = conn.CreateCommand())
 				{
-					cmd.CommandText = @"DELETE FROM NoteTag WHERE noteId = @noteId";
-					cmd.Parameters.AddWithValue("@noteId", noteId);
+					cmd.CommandText = @"DELETE FROM NoteTag WHERE NoteId = @NoteId AND TagId = @TagId";
+					cmd.Parameters.AddWithValue("@NoteId", noteTag.NoteId);
+					cmd.Parameters.AddWithValue("@TagId", noteTag.TagId);
 
 					cmd.ExecuteNonQuery();
 				}
@@ -133,7 +134,7 @@ namespace SKRATCH.Repositories
 		}
 
 
-		public void clearNoteTagsForNote(int NoteId)
+		public void ClearNoteTagsForNote(int noteId)
 		{
 			using (SqlConnection conn = Connection)
 			{
@@ -141,7 +142,7 @@ namespace SKRATCH.Repositories
 				using (SqlCommand cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = @"DELETE FROM NoteTag WHERE NoteId = @NoteId";
-					cmd.Parameters.AddWithValue("@NoteId", NoteId);
+					cmd.Parameters.AddWithValue("@NoteId", noteId);
 
 					cmd.ExecuteNonQuery();
 				}

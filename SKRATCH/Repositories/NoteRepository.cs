@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace SKRATCH.Repositories
 {
 	public class NoteRepository : BaseRepository, INoteRepository
@@ -26,6 +27,8 @@ namespace SKRATCH.Repositories
 							  n.Content, 
                               n.DateAdded, 
                               n.DateUpdated, 
+							  n.DateStart,
+							  n.DateEnd,
 							  n.IsStaged,
 							  n.UserId,
                               u.FirstName, u.LastName, u.DisplayName, 
@@ -40,25 +43,22 @@ namespace SKRATCH.Repositories
                               LEFT JOIN NoteTag nt ON nt.NoteId = n.id
                               LEFT JOIN Tag t ON t.Id = nt.TagId
                         WHERE n.UserId = @userId
-                        ORDER BY DateAdded DESC";
+                        ORDER BY DateAdded ASC";
 
 					cmd.Parameters.AddWithValue("@userId", id);
 
 					var reader = cmd.ExecuteReader();
 
 					var notes = new List<Note>();
-					Note note = null;
 					while (reader.Read())
 					{
 						var noteId = DbUtils.GetInt(reader, "Id");
-						if (note == null || note.Id != noteId)
+
+						var existingNote = notes.FirstOrDefault(note => note.Id == noteId);
+						if (existingNote == null)
 						{
-							if (note != null)
-							{
-								notes.Add(note);
-								note = new Note();
-							}
-							note = NewNoteFromReader(reader);
+							existingNote = NewNoteFromReader(reader);
+							notes.Add(existingNote);
 						}
 						if (DbUtils.IsNotDbNull(reader, "TagId"))
 						{
@@ -71,10 +71,9 @@ namespace SKRATCH.Repositories
 								MetaData = DbUtils.GetString(reader, "TagMetaData"),
 							};
 
-							note.Tags.Add(tag);
+							existingNote.Tags.Add(tag);
 						}
 					}
-					notes.Add(note);
 
 					reader.Close();
 
@@ -82,7 +81,8 @@ namespace SKRATCH.Repositories
 				}
 			}
 		}
-		public List<Note> GetNoteById(int id)
+
+		public List<Note> GetUpcomingNotesByUserId(int id)
 		{
 			using (var conn = Connection)
 			{
@@ -90,10 +90,12 @@ namespace SKRATCH.Repositories
 				using (var cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = @"
-                       SELECT n.Id, 
+                      SELECT n.Id, 
 							  n.Content, 
                               n.DateAdded, 
                               n.DateUpdated, 
+							  n.DateStart,
+							  n.DateEnd,
 							  n.IsStaged,
 							  n.UserId,
                               u.FirstName, u.LastName, u.DisplayName, 
@@ -107,25 +109,90 @@ namespace SKRATCH.Repositories
                               LEFT JOIN [User] u ON n.UserId = u.id
                               LEFT JOIN NoteTag nt ON nt.NoteId = n.id
                               LEFT JOIN Tag t ON t.Id = nt.TagId
-                        AND n.Id = @id
+                        WHERE n.UserId = @userId
+							AND n.DateStart IS NOT Null 
+							AND n.DateEnd <= @endOfDay
+                        ORDER BY DateAdded ASC";
+
+					cmd.Parameters.AddWithValue("@userId", id);
+					DateTime endOfCurrentDay= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+
+					cmd.Parameters.AddWithValue("@endOfDay", endOfCurrentDay);
+
+					var reader = cmd.ExecuteReader();
+
+					var notes = new List<Note>();
+					while (reader.Read())
+					{
+						var noteId = DbUtils.GetInt(reader, "Id");
+
+						var existingNote = notes.FirstOrDefault(note => note.Id == noteId);
+						if (existingNote == null)
+						{
+							existingNote = NewNoteFromReader(reader);
+							notes.Add(existingNote);
+						}
+						if (DbUtils.IsNotDbNull(reader, "TagId"))
+						{
+							Tag tag = new Tag()
+							{
+								Id = DbUtils.GetInt(reader, "TagId"),
+								UserId = DbUtils.GetInt(reader, "Id"),
+								Name = DbUtils.GetString(reader, "TagName"),
+								IsUserCreated = DbUtils.GetBoolean(reader, "TagIsUserCreated"),
+								MetaData = DbUtils.GetString(reader, "TagMetaData"),
+							};
+
+							existingNote.Tags.Add(tag);
+						}
+					}
+
+					reader.Close();
+
+					return notes;
+				}
+			}
+		}
+
+		public Note GetNoteById(int id)
+		{
+			using (var conn = Connection)
+			{
+				conn.Open();
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = @"
+                       SELECT n.Id, 
+							  n.Content, 
+                              n.DateAdded, 
+                              n.DateUpdated, 
+							  n.DateStart,
+							  n.DateEnd,
+							  n.IsStaged,
+							  n.UserId,
+                              u.FirstName, u.LastName, u.DisplayName, 
+                              u.Email, u.CreateDateTime,
+							  t.Id AS TagId, 
+							  t.Name AS TagName, 
+							  t.IsUserCreated AS TagIsUserCreated, 
+							  t.IsStatus AS TagIsStatus, 
+							  t.MetaData AS TagMetaData
+                         FROM Note n
+                              LEFT JOIN [User] u ON n.UserId = u.id
+                              LEFT JOIN NoteTag nt ON nt.NoteId = n.id
+                              LEFT JOIN Tag t ON t.Id = nt.TagId
+                        WHERE n.Id = @id
                         ORDER BY DateUpdated DESC";
 
 					cmd.Parameters.AddWithValue("@id", id);
 
 					var reader = cmd.ExecuteReader();
 
-					var notes = new List<Note>();
-					var note = new Note();
+					Note note = null;
 					while (reader.Read())
 					{
-						var noteId = DbUtils.GetInt(reader, "Id");
-						if (note == null || note.Id != noteId)
+						if (note == null)
 						{
-							if (note != null)
-							{
-								notes.Add(note);
-								note = new Note();
-							}
 							note = NewNoteFromReader(reader);
 						}
 						if (DbUtils.IsNotDbNull(reader, "TagId"))
@@ -145,11 +212,11 @@ namespace SKRATCH.Repositories
 
 					reader.Close();
 
-					return notes;
+					return note;
 				}
 			}
 		}
-		
+
 		public List<Note> GetNotesByTagId(int id)
 		{
 			using (var conn = Connection)
@@ -162,6 +229,8 @@ namespace SKRATCH.Repositories
 							  n.Content, 
                               n.DateAdded, 
                               n.DateUpdated, 
+							  n.DateStart,
+							  n.DateEnd,
 							  n.IsStaged,
 							  n.UserId,
                               u.FirstName, u.LastName, u.DisplayName, 
@@ -180,21 +249,18 @@ namespace SKRATCH.Repositories
 
 					cmd.Parameters.AddWithValue("@id", id);
 
-					var reader = cmd.ExecuteReader();
 
 					var notes = new List<Note>();
-					var note = new Note();
+					var reader = cmd.ExecuteReader();
 					while (reader.Read())
 					{
 						var noteId = DbUtils.GetInt(reader, "Id");
-						if (note == null || note.Id != noteId)
+
+						var existingNote = notes.FirstOrDefault(note => note.Id == noteId);
+						if (existingNote == null)
 						{
-							if (note != null)
-							{
-								notes.Add(note);
-								note = new Note();
-							}
-							note = NewNoteFromReader(reader);
+							existingNote = NewNoteFromReader(reader);
+							notes.Add(existingNote);
 						}
 						if (DbUtils.IsNotDbNull(reader, "TagId"))
 						{
@@ -207,7 +273,75 @@ namespace SKRATCH.Repositories
 								MetaData = DbUtils.GetString(reader, "TagMetaData"),
 							};
 
-							note.Tags.Add(tag);
+							existingNote.Tags.Add(tag);
+						}
+					}
+
+					reader.Close();
+
+					return notes;
+				}
+			}
+		}
+
+		public List<Note> GetNotesByTagName(string tagName, int userId)
+		{
+			using (var conn = Connection)
+			{
+				conn.Open();
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = @"
+                       SELECT n.Id, 
+							  n.Content, 
+                              n.DateAdded, 
+                              n.DateUpdated, 
+							  n.DateStart,
+							  n.DateEnd,
+							  n.IsStaged,
+							  n.UserId,
+                              u.FirstName, u.LastName, u.DisplayName, 
+                              u.Email, u.CreateDateTime,
+							  t.Id AS TagId, 
+							  t.[Name] AS TagName, 
+							  t.IsUserCreated AS TagIsUserCreated, 
+							  t.IsStatus AS TagIsStatus, 
+							  t.MetaData AS TagMetaData
+                         FROM Note n
+                              LEFT JOIN [User] u ON n.UserId = u.id
+                              LEFT JOIN NoteTag nt ON nt.NoteId = n.id
+                              LEFT JOIN Tag t ON t.Id = nt.TagId
+                        WHERE t.[Name] = @tagName AND n.UserId = @userId
+                        ORDER BY DateUpdated ASC";
+
+					cmd.Parameters.AddWithValue("@tagName", tagName);
+					cmd.Parameters.AddWithValue("@userId", userId);
+
+					var reader = cmd.ExecuteReader();
+
+					var notes = new List<Note>();
+					while (reader.Read())
+					{
+						var noteId = DbUtils.GetInt(reader, "Id");
+						
+						var existingNote = notes.FirstOrDefault(note => note.Id == noteId);
+						if (existingNote == null)
+						{
+							existingNote = NewNoteFromReader(reader);
+							notes.Add(existingNote);
+						}
+						if (DbUtils.IsNotDbNull(reader, "TagId"))
+						{
+							Tag tag = new Tag()
+							{
+								Id = DbUtils.GetInt(reader, "TagId"),
+								UserId = DbUtils.GetInt(reader, "Id"),
+								Name = DbUtils.GetString(reader, "TagName"),
+								IsUserCreated = DbUtils.GetBoolean(reader, "TagIsUserCreated"),
+								MetaData = DbUtils.GetString(reader, "TagMetaData"),
+							};
+
+							existingNote.Tags.Add(tag);
 						}
 					}
 
@@ -325,7 +459,10 @@ namespace SKRATCH.Repositories
 				Id = reader.GetInt32(reader.GetOrdinal("Id")),
 				Content = reader.GetString(reader.GetOrdinal("Content")),
 				DateAdded = reader.GetDateTime(reader.GetOrdinal("DateAdded")),
+				DateUpdated = reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
 				UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+				DateStart = DbUtils.GetNullableDateTime(reader, "DateStart"),
+				DateEnd = DbUtils.GetNullableDateTime(reader,"DateEnd"),
 				User = new User()
 				{
 					Id = reader.GetInt32(reader.GetOrdinal("UserId")),

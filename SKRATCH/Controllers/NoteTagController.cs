@@ -35,7 +35,13 @@ namespace SKRATCH.Controllers
 		[HttpDelete("ClearNote/{id}")]
 		public void ClearNoteTags(int id)
 		{
-			_NoteTagRepository.clearNoteTagsForNote(id);
+			_NoteTagRepository.ClearNoteTagsForNote(id);
+		}
+
+		[HttpDelete("ClearNoteTag")]
+		public void ClearNoteTags(NoteTag noteTag)
+		{
+			_NoteTagRepository.ClearNoteTag(noteTag);
 		}
 
 	}

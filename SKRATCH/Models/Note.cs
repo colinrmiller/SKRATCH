@@ -25,5 +25,7 @@ namespace SKRATCH.Models
         public string MetaData { get; set; }
 
         public List<Tag> Tags { get; internal set; }
-    }
+		public DateTime? DateStart { get; internal set; }
+		public DateTime? DateEnd { get; internal set; }
+	}
 }

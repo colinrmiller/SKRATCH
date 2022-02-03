@@ -49,10 +49,18 @@ namespace SKRATCH.Controllers
 			return Ok(note);
 		}
 
-		[HttpGet("NoteByTagId/{id}")]
-		public IActionResult NoteByTag(int id)
+
+		[HttpGet("NotesByTagName/{tagName}")]
+		public IActionResult NotesByTagName(string tagName, int userId)
 		{
-			var notes = _NoteRepository.GetNotesByTagId(id);
+			var notes = _NoteRepository.GetNotesByTagName(tagName, userId);
+			return Ok(notes);
+		}
+		
+		[HttpGet("upcoming")]
+		public IActionResult NotesByTagName(int userId)
+		{
+			var notes = _NoteRepository.GetUpcomingNotesByUserId(userId);
 			return Ok(notes);
 		}
 

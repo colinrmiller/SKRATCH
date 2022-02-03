@@ -21,14 +21,6 @@ namespace SKRATCH.Controllers
 			_TagRepository = TagRepository;
 		}
 
-		// GET: api/<TagController>/TagsByUserId/1
-		[HttpGet("TagsByUserId/{id}")]
-		public IActionResult TagsByUserId(int id)
-		{
-			var notes = _TagRepository.GetAllUserTags(id);
-			return Ok(notes);
-		}
-
 		// GET api/<TagController>/5
 		[HttpGet("{id}")]
 		public IActionResult Get(int id)
@@ -45,6 +37,32 @@ namespace SKRATCH.Controllers
 			var notes = _TagRepository.GetTagsByNoteId(id);
 			return Ok(notes);
 		}
+
+		// GET: api/<TagController>/TagsByUserId/1
+		[HttpGet("TagsByUserId/{id}")]
+		public IActionResult TagsByUserId(int id)
+		{
+			var notes = _TagRepository.GetAllUserTags(id);
+			return Ok(notes);
+		}
+
+		// GET: api/<TagController>/TagsByUserId/1
+		[HttpGet("TagsByUserIdByType/{id}")]
+		public IActionResult TagsByUserIdByType(int id, string type)
+		{
+			var notes = _TagRepository.GetAllUserTagsByType(id, type);
+			return Ok(notes);
+		}
+		
+		// GET: api/<TagController>/TagsByUserId/1
+		[HttpGet("priorities")]
+		public IActionResult Priorities()
+		{
+			var notes = _TagRepository.GetPriorityTags();
+			return Ok(notes);
+		}
+
+
 
 		[HttpPost]
 		public IActionResult Post(Tag tag)

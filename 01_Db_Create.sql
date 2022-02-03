@@ -40,6 +40,8 @@ CREATE TABLE [Note] (
   [UserId] int NOT NULL,
   [DateAdded] datetime NOT NULL,
   [DateUpdated] datetime,
+  [DateStart] datetime,
+  [DateEnd] datetime,
   [IsStaged] bit NOT NULL,
   [MetaData] nvarchar(255),
 

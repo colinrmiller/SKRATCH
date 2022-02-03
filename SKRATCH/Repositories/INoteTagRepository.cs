@@ -5,7 +5,8 @@ namespace SKRATCH.Repositories
 	public interface INoteTagRepository
 	{
 		void Add(NoteTag NoteTag);
-		void clearNoteTagsForNote(int NoteId);
+		void ClearNoteTag(NoteTag noteTag);
+		void ClearNoteTagsForNote(int noteId);
 		void Delete(int id);
 		NoteTag GetById(int id);
 	}
