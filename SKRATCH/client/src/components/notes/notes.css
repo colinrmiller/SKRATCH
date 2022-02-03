@@ -1,13 +1,17 @@
 .notelist {
-  max-width: 220px;
+  max-width: 80%;
   border: 1px solid rgba(0, 0, 0, 0.0);
 }
 
-.notelist--item {
+.noteList__body {
+  width: 100%;
+}
+
+.noteList-item {
   min-width: 1000px;
 }
 
-.notelist--item__text {
+.noteList-item--text {
   border: rgba(0, 0, 0, 0.0);
   font-size: 20px;
   resize: none;
@@ -16,6 +20,15 @@
   box-sizing: border-box;
   resize: none;
   outline: none;
+}
 
+.note-details-container {
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+}
 
+.note-details__aside {
+  display: flex;
+  flex-direction: column;
 }

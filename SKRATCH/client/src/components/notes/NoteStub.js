@@ -4,12 +4,12 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { isEqual, difference } from "lodash";
-import "./notes.css";
+import "../notes/notes.css";
 import { updateNote } from "../../modules/NoteManager";
 import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
-import { formatDate } from "../../utils/utils";
+import { formatDate, stubContent } from "../../utils/utils";
 
-function NoteListItem({
+function NoteStub({
   note,
   depthStep = 10,
   depth = 0,
@@ -90,26 +90,19 @@ function NoteListItem({
     }
   }, [shouldUpdateNoteContent]);
 
+  const handleRoute = () => {
+    history.push(`/notes/${note.id}`);
+  };
+
   return (
     <div className="noteList-item">
-      <ListItem button dense>
-        <div className="noteList__body">
-          <div className="noteList-item--header">
-            <div className="noteList-item--updated">
-              last updated: {formatDate(note.dateUpdated)}{" "}
-            </div>
-            <div className="noteList-item--route">Details</div>
-          </div>
-          <textarea
-            value={content}
-            className="noteList-item--text"
-            rows={textAreaRowCount}
-            onChange={handleContentChange}
-          />
+      <ListItem button dense onClick={handleRoute}>
+        <div className="noteList__body--stub">
+          <div>{stubContent(content)}</div>
         </div>
       </ListItem>
     </div>
   );
 }
 
-export default NoteListItem;
+export default NoteStub;

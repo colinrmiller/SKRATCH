@@ -9,10 +9,11 @@ import { getUserNotes } from "../../modules/NoteManager";
 import NoteList from "./NoteList";
 import NewNote from "./NewNote";
 
-function DisplayNotes() {
+function NotesDisplay() {
   const [notes, setNotes] = useState([]);
   const [shouldUpdateNotes, setShouldUpdateNotes] = useState(false);
   const [isDisplayingNewNote, setIsDisplayingNewNote] = useState(false);
+  const [isNewNoteSubmitted, setIsNewNoteSubmitted] = useState(false);
 
   const currentUser = 1;
 
@@ -24,13 +25,11 @@ function DisplayNotes() {
 
   useEffect(() => {
     getNotes();
-  }, []);
+  }, [isNewNoteSubmitted]);
 
   const handleUpdateNotes = (event) => {
     event.preventDefault();
     setShouldUpdateNotes((value) => !value);
-    // setShouldUpdateNotes(false);
-    // setTimeout(setShouldUpdateNotes(false), 100);
   };
 
   const handleNewNote = () => {
@@ -41,12 +40,15 @@ function DisplayNotes() {
     setIsDisplayingNewNote(false);
   };
 
+  useEffect(() => {});
+
   return (
     <div className="notes-container">
       <NoteList notes={notes} shouldUpdateNotes={shouldUpdateNotes} />
       <NewNote
         isDisplaying={isDisplayingNewNote}
         shouldSubmit={shouldUpdateNotes}
+        setIsNewNoteSubmitted={setIsNewNoteSubmitted}
       />
       <div className="notes-container--interaction">
         <button onClick={handleUpdateNotes}>Update</button>
@@ -60,4 +62,4 @@ function DisplayNotes() {
   );
 }
 
-export default DisplayNotes;
+export default NotesDisplay;

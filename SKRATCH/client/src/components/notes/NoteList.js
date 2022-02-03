@@ -10,7 +10,7 @@ function NoteList({ notes, depthStep, depth, shouldUpdateNotes }) {
   return (
     <div className="notelist">
       <List disablePadding dense>
-        {notes.map((note, index) => (
+        {notes?.map((note, index) => (
           <NoteListItem
             key={`${note.id}`}
             note={note}

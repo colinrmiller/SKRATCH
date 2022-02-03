@@ -3,12 +3,18 @@ import { useHistory } from "react-router-dom";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import { cloneDeep } from "lodash";
 import "./notes.css";
 import { addNote } from "../../modules/NoteManager";
 import { getUserTags, addTag, addNoteTag } from "../../modules/TagManager";
 import { isContentNull, AddTagsToNoteObj } from "../../utils/utils";
+import { parseFilterOutTags } from "../../utils/parse";
+import {
+  AddTagsAndReturnCreatedIds,
+  addNoteTagsForNote,
+} from "../../utils/tags";
 
-function NewNote({ isDisplaying, shouldSubmit }) {
+function NewNote({ isDisplaying, shouldSubmit, setIsNewNoteSubmitted }) {
   const currentUserId = 1; // TODO
 
   const [note, setNote] = useState({ userId: currentUserId, content: "" });
@@ -29,70 +35,43 @@ function NewNote({ isDisplaying, shouldSubmit }) {
 
     setTextAreaRowCount(Math.max(textRowLen.length, minTextAreaRowCount));
   }, [note.content]);
-  // DONE
 
-  // effect for submit note
+  const clearNote = () => {
+    setNote({ userId: currentUserId, content: "" });
+  };
+
+  // submit note on shouldSubmit=true
   useEffect(() => {
     if (shouldSubmit && !isContentNull(note.content) && isDisplaying) {
       // if submiting
-      getUserTags(currentUserId).then((existingUserTags) => {
-        const noteWithTags = AddTagsToNoteObj(note, existingUserTags);
-        const newTags = noteWithTags.tags.filter((tag) => tag.id === -1);
+      getUserTags(currentUserId)
+        .then((existingUserTags) => {
+          const noteCopy = AddTagsToNoteObj(note, existingUserTags);
+          const newTags = noteCopy.tags.filter((tag) => tag.id === -1);
 
-        const promisesToAddTags = newTags.map(
-          (tag) =>
-            new Promise((resolve, reject) => {
-              const newTag = {
-                name: tag.name,
-                userId: note.userId,
-                isUserCreated: true,
-                metaData: "{}",
-              };
+          const promisesToAddTags = AddTagsAndReturnCreatedIds(
+            newTags,
+            noteCopy
+          );
 
-              return addTag(newTag).then((tagId) => {
-                newTag.id = tagId;
-                return resolve(newTag);
-              });
-            })
-        );
-        debugger;
-
-        Promise.all(promisesToAddTags).then((addedTags) => {
-          const noteWithUpdatedTagIds = [];
-
-          // update noteTags with just added tagIds
-          noteWithTags.tags.forEach((tag, index) => {
-            const tagIndex = addedTags
-              .map((addedTag) => addedTag.name)
-              .indexOf(tag.name);
-            if (tagIndex === -1) noteWithUpdatedTagIds.push(tag);
-            else {
-              tag.id = addedTags[tagIndex].id;
-              noteWithUpdatedTagIds.push(tag);
-            }
+          return Promise.all(promisesToAddTags).then((addedTags) => {
+            addNoteTagsForNote(addedTags, noteCopy);
           });
-
-          if (note)
-            addNote(noteWithTags).then((noteId) => {
-              // add noteTags for note
-              noteWithTags.tags.forEach((noteTag) => {
-                debugger;
-                const newNoteTag = { noteId: noteId, tagId: noteTag.id };
-                addNoteTag(newNoteTag);
-              });
-            });
+        })
+        .then(() => {
+          clearNote();
+          setIsNewNoteSubmitted(true);
         });
-      });
     }
   }, [shouldSubmit]);
 
   if (isDisplaying)
     return (
-      <div className="notelist--item">
+      <div className="noteList-item">
         <ListItem button dense>
           <textarea
             value={note.content}
-            className="notelist--item__text"
+            className="noteList-item--text"
             rows={textAreaRowCount}
             onChange={handleUpdateNoteContent}
           />
