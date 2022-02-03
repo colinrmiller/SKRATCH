@@ -34,10 +34,9 @@ namespace SKRATCH
             // services.AddTransient<IReactionRepository, ReactionRepository>();
 
             // verbose loggin
-            IdentityModelEventSource.ShowPII = true;
+            //IdentityModelEventSource.ShowPII = true;
 
             var firebaseProjectId = Configuration.GetValue<string>("FirebaseProjectId");
-            //var firebaseProjectId = "skratch-569a4";
 
             var googleTokenUrl = $"https://securetoken.google.com/{firebaseProjectId}";
             services
@@ -58,44 +57,44 @@ namespace SKRATCH
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SKRATCH", Version = "v1" });
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "SKRATCH", Version = "v1" });
 
-                var securitySchema = new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    BearerFormat = "JWT",
-                    Description = "JWT Authorization header using the Bearer scheme.",
-                    Type = SecuritySchemeType.ApiKey,
-                    In = ParameterLocation.Header,
-                    Reference = new OpenApiReference
-                    {
-                        Id = "Bearer",
-                        Type = ReferenceType.SecurityScheme,
-                    }
-                };
+				var securitySchema = new OpenApiSecurityScheme
+				{
+					Name = "Authorization",
+					BearerFormat = "JWT",
+					Description = "JWT Authorization header using the Bearer scheme.",
+					Type = SecuritySchemeType.ApiKey,
+					In = ParameterLocation.Header,
+					Reference = new OpenApiReference
+					{
+						Id = "Bearer",
+						Type = ReferenceType.SecurityScheme,
+					}
+				};
 
-                c.AddSecurityDefinition("Bearer", securitySchema);
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { securitySchema, new[] { "Bearer"} }
-                });
-            });
+				c.AddSecurityDefinition("Bearer", securitySchema);
+				c.AddSecurityRequirement(new OpenApiSecurityRequirement
+				{
+					{ securitySchema, new[] { "Bearer"} }
+				});
+			});
 
-        }
+		}
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SKRATCH v1"));
-            }
+            if (env.IsDevelopment() || env.IsEnvironment("Local"))
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseSwagger();
+				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SKRATCH v1"));
+			}
 
-            app.UseHttpsRedirection();
+			app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseAuthentication();

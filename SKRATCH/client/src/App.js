@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import { useState, useEffect } from "react";
 import { onLoginStatusChange } from "./modules/authManager";
 import { Spinner } from "reactstrap";
+import Search from "./components/Search";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -23,6 +24,7 @@ function App() {
     <div className="App">
       <Router>
         <Header isLoggedIn={isLoggedIn} />
+        <Search />
         <ApplicationViews isLoggedIn={isLoggedIn} />
       </Router>
     </div>

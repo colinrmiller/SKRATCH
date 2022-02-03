@@ -5,7 +5,11 @@ import Register from "./Register";
 import SkratchPad from "./SkratchPad";
 import Sidebar from "./Sidebar";
 import TagSidebar from "./TagSidebar";
-import DisplayNotes from "./notes/DisplayNotes";
+import NotesDisplay from "./notes/NotesDisplay";
+import TagDisplay from "./tags/TagDisplay";
+import NoteDetails from "./notes/NoteDetails";
+import Agenda from "./agenda/Agenda";
+import Priority from "./priority/Priority";
 import "../App.css";
 
 const _dummySidebarData = [
@@ -13,7 +17,7 @@ const _dummySidebarData = [
   {
     name: "Agenda",
     label: "Agenda",
-    route: "/Tag/Agenda",
+    route: "/Agenda",
     items: [
       { name: "Today", label: "Today", route: "/Tag/Today" },
       { name: "Tomorrow", label: "Tomorrow", route: "/Tag/Tomorrow" },
@@ -23,7 +27,7 @@ const _dummySidebarData = [
   {
     name: "Priority",
     label: "Priority",
-    route: "/Tag/Priority",
+    route: "/Priority",
     items: [
       { name: "Urgent", label: "Urgent", route: "/Tag/Urgent" },
       { name: "Open", label: "Open", route: "/Tag/Open" },
@@ -41,7 +45,6 @@ const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
         <Route path="/login">
           <Login />
         </Route>
-
         <Route path="/register">
           <Register />
         </Route>
@@ -49,9 +52,20 @@ const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
         <Route path="/" exact>
           {isLoggedIn ? <></> : <Redirect to="/login" />}
         </Route>
-
         <Route path="/notes" exact>
-          {isLoggedIn ? <DisplayNotes /> : <Redirect to="/login" />}
+          {isLoggedIn ? <NotesDisplay /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/notes/:id" exact>
+          {isLoggedIn ? <NoteDetails useParams /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/tags/:tagName" exact>
+          {isLoggedIn ? <TagDisplay useParams /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/agenda" exact>
+          {isLoggedIn ? <Agenda /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/priority" exact>
+          {isLoggedIn ? <Priority /> : <Redirect to="/login" />}
         </Route>
 
         {/* <Route path="/" exact>

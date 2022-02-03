@@ -21,7 +21,7 @@ export default function Header({ isLoggedIn }) {
     <div>
       <Navbar color="light" light expand="md">
         <NavbarBrand tag={RRNavLink} to="/">
-          Tabloid
+          SKRATCH
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
@@ -41,14 +41,14 @@ export default function Header({ isLoggedIn }) {
             {isLoggedIn && (
               <>
                 <NavItem>
-                  <a
+                  <div
                     aria-current="page"
                     className="nav-link"
                     style={{ cursor: "pointer" }}
                     onClick={logout}
                   >
                     Logout
-                  </a>
+                  </div>
                 </NavItem>
               </>
             )}

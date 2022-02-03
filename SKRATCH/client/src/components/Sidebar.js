@@ -18,7 +18,7 @@ function SidebarItem({
   const history = useHistory();
 
   const handleNav = (route) => {
-    history.push(route);
+    history.push(`${route}`);
   };
 
   return (

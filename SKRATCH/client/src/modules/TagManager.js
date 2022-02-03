@@ -38,6 +38,33 @@ export const removeNoteTags = (noteId) => {
   });
 };
 
+export const removeNoteTag = (noteTag) => {
+  return fetch(`/api/notetag/clearnotetag/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(noteTag),
+  });
+};
+
+export const getUserTypedTags = (userId, tagType) => {
+  return fetch(`${baseUrl}/TagsByUserIdByType/${userId}?type=${tagType}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+};
+
+export const getPriorities = () => {
+  return fetch(`${baseUrl}/Priorities`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+};
 // export const getBySearch = (q, isSort) => {
 //   return fetch(baseUrl + `/search?q=${q}&sortDesc=${isSort}`, {
 //     method: "GET",

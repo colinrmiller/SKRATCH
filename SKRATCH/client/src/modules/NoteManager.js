@@ -2,9 +2,17 @@ import { ParseNoteTags, isContentNull } from "../utils/utils";
 const baseUrl = "/api/note";
 
 export const getUserNotes = (userId) => {
-  console.log("fetching notes");
-
   return fetch(`${baseUrl}?userId=${userId}`).then((res) => res.json());
+};
+
+export const getUpcomingUserNotes = (userId) => {
+  return fetch(`${baseUrl}/upcoming?userId=${userId}`).then((res) =>
+    res.json()
+  );
+};
+
+export const getNoteById = (noteId) => {
+  return fetch(`${baseUrl}/${noteId}`).then((res) => res.json());
 };
 
 export const updateNote = (note) => {
@@ -40,8 +48,6 @@ export const addNote = (note) => {
     },
     body: JSON.stringify(noteCopy),
   }).then((res) => res.json());
-
-  //
 };
 
 // export const getBySearch = (q, isSort) => {
@@ -62,14 +68,14 @@ export const addNote = (note) => {
 //   }).then((resp) => resp.json());
 // };
 
-// export const getNotesByCategoryId = (catId) => {
-//   return fetch(baseUrl + `/GetNoteByCategoryId/${catId}`, {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   }).then((resp) => resp.json());
-// };
+export const getNotesByTagName = (tagName, userId) => {
+  return fetch(baseUrl + `/NotesByTagName/${tagName}?userid=${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((resp) => resp.json());
+};
 
 // export const getNotesByUserId = (userId) => {
 //   return fetch(baseUrl + `/GetNotesByUserId/${userId}`, {
