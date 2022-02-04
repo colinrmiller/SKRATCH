@@ -47,7 +47,6 @@ function PriorityView({ notes, setUpdateInstructions, priorities }) {
   }, [items]);
 
   const onDragEnd = (result) => {
-    debugger;
     if (!result.destination) {
       return;
     }

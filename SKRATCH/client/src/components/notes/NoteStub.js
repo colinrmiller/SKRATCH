@@ -14,13 +14,13 @@ function NoteStub({ note }) {
   return (
     <div className="noteList-item">
       <ListItem button dense onClick={handleRoute}>
-        <div className="noteList__body--stub">
+        <div className="noteList__body--stub" key={note.id}>
           <div className="noteList-stub--content" style={{ whiteSpace: "pre" }}>
             {stubContent(note.content)}
           </div>
           <div className="noteList-stub--tags">
             {note.tags.map((tag) => (
-              <div>#{tag.name}</div>
+              <div key={tag.id}>#{tag.name}</div>
             ))}
           </div>
         </div>

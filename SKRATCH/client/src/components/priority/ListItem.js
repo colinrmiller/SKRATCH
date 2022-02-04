@@ -1,6 +1,7 @@
 import { Draggable } from "react-beautiful-dnd";
 import React, { useMemo } from "react";
 import styled, { css } from "styled-components";
+import { cleanPriorityCard } from "../../utils/utils";
 
 const Avatar = styled.img`
   height: 30px;
@@ -46,7 +47,7 @@ const ListItem = ({ item, index }) => {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            <CardHeader>{item.content.replace(/\\\\/g, "\\")}</CardHeader>
+            <CardHeader>{cleanPriorityCard(item.content)}</CardHeader>
           </DragItem>
         );
       }}

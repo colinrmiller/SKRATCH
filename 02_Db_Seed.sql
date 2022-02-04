@@ -9,7 +9,8 @@ values (1, 'TODO', 0, 1, 'status'), (2, 'P0', 0, 0, 'priority'),(9, 'P1', 0, 0, 
 set identity_insert [Tag] off
 
 set identity_insert [User] on
-insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (1, 'colinraymiller', 'Colin', 'miller', 'colinraymiller@gmail.com', '2020-04-20','hrEhRHFb3gfkLSKXNO656lwJpo73');
+insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (1, 'colinraymiller', 'Colin', 'miller', 'colinraymiller@gmail.com', '2020-04-20','ve7miQcU6RfWjIkYMoxVXAzcvnU2');
+insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (1, 'admin', 'Admin', 'miller', 'admin@example.com', '2020-04-20','hVYU8fsZQ6TLJHKkifh5o7b3FIC3');
 set identity_insert [User] off
 
 set identity_insert [Note] on

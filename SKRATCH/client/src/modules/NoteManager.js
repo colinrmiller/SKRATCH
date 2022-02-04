@@ -44,7 +44,6 @@ export const updateNoteTags = (note) => {
 
   const tagsToRemove = difference(currentTags, updatedTags);
   const tagsToAdd = difference(updatedTags, currentTags);
-  debugger;
   // foreach updatedTagId POST
   tagsToAdd.forEach((tagId) => {
     const newNoteTag = {

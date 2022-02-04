@@ -13,11 +13,14 @@ import {
   AddTagsAndReturnCreatedIds,
   addNoteTagsForNote,
 } from "../../utils/tags";
+import useDebounce from "../../utils/useDebounce";
 
-function NewNote({ isDisplaying, shouldSubmit, setIsNewNoteSubmitted }) {
+function NewNote({ setIsNewNoteSubmitted }) {
   const currentUserId = 1; // TODO
 
   const [note, setNote] = useState({ userId: currentUserId, content: "" });
+
+  const debouncedNote = useDebounce(note, 500);
 
   const handleUpdateNoteContent = (event) => {
     let noteCopy = { ...note };
@@ -42,7 +45,7 @@ function NewNote({ isDisplaying, shouldSubmit, setIsNewNoteSubmitted }) {
 
   // submit note on shouldSubmit=true
   useEffect(() => {
-    if (shouldSubmit && !isContentNull(note.content) && isDisplaying) {
+    if (!isContentNull(note.content)) {
       // if submiting
       getUserTags(currentUserId)
         .then((existingUserTags) => {
@@ -63,22 +66,20 @@ function NewNote({ isDisplaying, shouldSubmit, setIsNewNoteSubmitted }) {
           setIsNewNoteSubmitted(true);
         });
     }
-  }, [shouldSubmit]);
+  }, [debouncedNote]);
 
-  if (isDisplaying)
-    return (
-      <div className="noteList-item">
-        <ListItem button dense>
-          <textarea
-            value={note.content}
-            className="noteList-item--text"
-            rows={textAreaRowCount}
-            onChange={handleUpdateNoteContent}
-          />
-        </ListItem>
-      </div>
-    );
-  else return <></>;
+  return (
+    <div className="noteList-item">
+      <ListItem button dense tabIndex={-1}>
+        <textarea
+          value={note.content}
+          className="noteList-item--text"
+          rows={textAreaRowCount}
+          onChange={handleUpdateNoteContent}
+        />
+      </ListItem>
+    </div>
+  );
 }
 
 export default NewNote;

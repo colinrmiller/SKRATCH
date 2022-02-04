@@ -6,7 +6,13 @@ import ListItemText from "@material-ui/core/ListItemText";
 import "./notes.css";
 import NoteListItem from "./NoteListItem";
 
-function NoteList({ notes, depthStep, depth, shouldUpdateNotes }) {
+function NoteList({
+  notes,
+  depthStep,
+  depth,
+  shouldUpdateNotes,
+  setShouldReloadNotes,
+}) {
   return (
     <div className="notelist">
       <List disablePadding dense>
@@ -18,6 +24,9 @@ function NoteList({ notes, depthStep, depth, shouldUpdateNotes }) {
             depth={depth}
             route={note.route}
             shouldUpdateNoteContent={shouldUpdateNotes}
+            setShouldReloadNotes={setShouldReloadNotes}
+            index={index}
+            lastItem={index === notes.length - 1}
             {...note}
           />
         ))}

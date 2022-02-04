@@ -14,7 +14,7 @@ function NotesDisplay() {
   const [shouldUpdateNotes, setShouldUpdateNotes] = useState(false);
   const [isDisplayingNewNote, setIsDisplayingNewNote] = useState(false);
   const [isNewNoteSubmitted, setIsNewNoteSubmitted] = useState(false);
-
+  const [shouldReloadNotes, setShouldReloadNotes] = useState(false);
   const currentUser = 1;
 
   const getNotes = () => {
@@ -33,7 +33,8 @@ function NotesDisplay() {
 
   useEffect(() => {
     getNotes();
-  }, [isNewNoteSubmitted]);
+    setIsNewNoteSubmitted(false);
+  }, [isNewNoteSubmitted, shouldReloadNotes]);
 
   const handleUpdateNotes = (event) => {
     event.preventDefault();
@@ -52,11 +53,16 @@ function NotesDisplay() {
 
   return (
     <div className="notes-container">
-      <NoteList notes={notes} shouldUpdateNotes={shouldUpdateNotes} />
+      <NoteList
+        notes={notes}
+        shouldUpdateNotes={shouldUpdateNotes}
+        setShouldReloadNotes={setShouldReloadNotes}
+      />
       <NewNote
-        isDisplaying={isDisplayingNewNote}
+        isDisplaying={true}
         shouldSubmit={shouldUpdateNotes}
         setIsNewNoteSubmitted={setIsNewNoteSubmitted}
+        // noteIndex={notes.length}
       />
       <div className="notes-container--interaction">
         <button onClick={handleUpdateNotes}>Update</button>

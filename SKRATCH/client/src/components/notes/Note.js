@@ -8,6 +8,14 @@ import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
 import { formatDate, cleanContent, isContentNull } from "../../utils/utils";
 import useDebounce from "../../utils/useDebounce";
 import { cloneDeep } from "lodash";
+import { addNote } from "../../modules/NoteManager";
+import { getUserTags, addTag } from "../../modules/TagManager";
+import { AddTagsToNoteObj } from "../../utils/utils";
+import { parseFilterOutTags } from "../../utils/parse";
+import {
+  AddTagsAndReturnCreatedIds,
+  addNoteTagsForNote,
+} from "../../utils/tags";
 
 function NoteListItem({
   note,

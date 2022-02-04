@@ -87,7 +87,6 @@ export const cleanContent = (content) => {
 
 export const cleanPriorityCard = (content) => {
   const STUB_VIEW_CONTENT_LENGTH = 60;
-
   const stubLine = (line) => {
     if (line.length < STUB_VIEW_CONTENT_LENGTH) return [line];
     else {
@@ -100,7 +99,7 @@ export const cleanPriorityCard = (content) => {
   const cleanContent = content.replace(/\\n/g, "\n");
   const cleanContentLines = cleanContent.split("\n");
   const cleanContentStub = cleanContentLines.reduce((acc, line) => {
-    return [...acc, ...stubLine(line)];
+    return [...stubLine(acc), ...stubLine(line)];
   });
 
   return cleanContentStub.slice(0, 4).join("\n");

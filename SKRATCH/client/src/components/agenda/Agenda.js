@@ -42,7 +42,6 @@ function Agenda() {
 
   const updateNoteWithInstructions = (noteId, prevId, newId) => {
     const notesCopy = cloneDeep(notes);
-    debugger;
     const noteIndex = notesCopy.findIndex((note) => {
       return note.id == noteId;
     });
@@ -68,11 +67,9 @@ function Agenda() {
 
   useEffect(() => {
     if (updateInstructions.shouldUpdate) {
-      debugger;
       const noteToUpdate = notes.find(
         (note) => note.id === updateInstructions.shouldUpdateId
       );
-      debugger;
       const currentTags = noteToUpdate.tags.map((tag) => tag.id);
       const oldTagIndex = currentTags.indexOf(updateInstructions.updatePrevId);
       currentTags.splice(oldTagIndex, 1, updateInstructions.updateNewId);
