@@ -1,4 +1,7 @@
 import { ParseNoteTags, isContentNull } from "../utils/utils";
+import { addNoteTag, removeNoteTag } from "./TagManager";
+import { difference } from "lodash";
+
 const baseUrl = "/api/note";
 
 export const getUserNotes = (userId) => {
@@ -33,6 +36,30 @@ export const updateNote = (note) => {
       body: JSON.stringify(note),
     });
   }
+};
+
+export const updateNoteTags = (note) => {
+  const currentTags = note.tags.map((tag) => tag.id);
+  const updatedTags = note.activeTagIds;
+
+  const tagsToRemove = difference(currentTags, updatedTags);
+  const tagsToAdd = difference(updatedTags, currentTags);
+  debugger;
+  // foreach updatedTagId POST
+  tagsToAdd.forEach((tagId) => {
+    const newNoteTag = {
+      tagId: tagId,
+      noteId: note.id,
+    };
+    addNoteTag(newNoteTag);
+  });
+  tagsToRemove.forEach((tagId) => {
+    const newNoteTag = {
+      tagId: tagId,
+      noteId: note.id,
+    };
+    removeNoteTag(newNoteTag);
+  });
 };
 
 export const addNote = (note) => {

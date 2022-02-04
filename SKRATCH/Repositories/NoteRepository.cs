@@ -102,6 +102,7 @@ namespace SKRATCH.Repositories
                               u.Email, u.CreateDateTime,
 							  t.Id AS TagId, 
 							  t.Name AS TagName, 
+							  t.Type,
 							  t.IsUserCreated AS TagIsUserCreated, 
 							  t.IsStatus AS TagIsStatus, 
 							  t.MetaData AS TagMetaData
@@ -110,8 +111,8 @@ namespace SKRATCH.Repositories
                               LEFT JOIN NoteTag nt ON nt.NoteId = n.id
                               LEFT JOIN Tag t ON t.Id = nt.TagId
                         WHERE n.UserId = @userId
-							AND n.DateStart IS NOT Null 
-							AND n.DateEnd <= @endOfDay
+							AND ((n.DateStart IS NOT Null 
+							AND n.DateEnd <= @endOfDay) OR (t.Type = 'priority'))
                         ORDER BY DateAdded ASC";
 
 					cmd.Parameters.AddWithValue("@userId", id);
