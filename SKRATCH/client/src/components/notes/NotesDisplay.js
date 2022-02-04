@@ -18,8 +18,16 @@ function NotesDisplay() {
   const currentUser = 1;
 
   const getNotes = () => {
+    const AddActiveTagIdsToNote = (note) => {
+      const activeTagIds = note.tags.map((tag) => tag.id);
+      note.activeTagIds = activeTagIds;
+      return note;
+    };
     getUserNotes(currentUser).then((res) => {
-      setNotes(res);
+      const notesWithActiveTagIds = res.map((note) =>
+        AddActiveTagIdsToNote(note)
+      );
+      setNotes(notesWithActiveTagIds);
     });
   };
 

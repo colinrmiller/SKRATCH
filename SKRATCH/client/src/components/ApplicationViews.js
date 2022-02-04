@@ -9,7 +9,6 @@ import NotesDisplay from "./notes/NotesDisplay";
 import TagDisplay from "./tags/TagDisplay";
 import NoteDetails from "./notes/NoteDetails";
 import Agenda from "./agenda/Agenda";
-import Priority from "./priority/Priority";
 import "../App.css";
 
 const _dummySidebarData = [
@@ -64,9 +63,7 @@ const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
         <Route path="/agenda" exact>
           {isLoggedIn ? <Agenda /> : <Redirect to="/login" />}
         </Route>
-        <Route path="/priority" exact>
-          {isLoggedIn ? <Priority /> : <Redirect to="/login" />}
-        </Route>
+        <Route path="/priority" exact></Route>
 
         {/* <Route path="/" exact>
           <SkratchPad></SkratchPad>

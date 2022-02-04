@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import { isEqual, difference } from "lodash";
 import "./notes.css";
-import { updateNote } from "../../modules/NoteManager";
+import { updateNote, updateNoteTags } from "../../modules/NoteManager";
 import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
-import { formatDate } from "../../utils/utils";
+import { formatDate, cleanContent } from "../../utils/utils";
 
 function NoteListItem({
   note,
@@ -29,33 +27,6 @@ function NoteListItem({
   const handleContentChange = (event) => {
     setIsContentUpdated(true);
     setContent(event.target.value);
-  };
-
-  const updateNoteTags = (noteCopy) => {
-    const tagsToRemove = difference(
-      noteCopy.tags.map((tag) => tag.id),
-      noteCopy.activeTagIds
-    );
-    const tagsToAdd = difference(
-      noteCopy.activeTagIds,
-      noteCopy.tags.map((tag) => tag.id)
-    );
-
-    // foreach updatedTagId POST
-    tagsToAdd.forEach((tagId) => {
-      const newNoteTag = {
-        tagId: tagId,
-        noteId: noteCopy.id,
-      };
-      addNoteTag(newNoteTag);
-    });
-    tagsToRemove.forEach((tagId) => {
-      const newNoteTag = {
-        tagId: tagId,
-        noteId: noteCopy.id,
-      };
-      removeNoteTag(newNoteTag);
-    });
   };
 
   useEffect(() => {
@@ -101,7 +72,7 @@ function NoteListItem({
             <div className="noteList-item--route">Details</div>
           </div>
           <textarea
-            value={content}
+            value={cleanContent(content)}
             className="noteList-item--text"
             rows={textAreaRowCount}
             onChange={handleContentChange}

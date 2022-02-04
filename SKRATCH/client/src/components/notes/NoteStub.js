@@ -1,94 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import { isEqual, difference } from "lodash";
 import "../notes/notes.css";
-import { updateNote } from "../../modules/NoteManager";
-import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
-import { formatDate, stubContent } from "../../utils/utils";
+import { stubContent } from "../../utils/utils";
 
-function NoteStub({
-  note,
-  depthStep = 10,
-  depth = 0,
-  route,
-  shouldUpdateNoteContent,
-}) {
+function NoteStub({ note }) {
   const history = useHistory();
-
-  // Increase Textarea height based on content length
-  const minTextAreaRowCount = 4;
-  const [textAreaRowCount, setTextAreaRowCount] = useState(minTextAreaRowCount);
-
-  const [content, setContent] = useState(note.content);
-  const [isContentUpdated, setIsContentUpdated] = useState(false);
-  const [areTagsUpdated, setAreTagsUpdated] = useState(false);
-
-  const handleContentChange = (event) => {
-    setIsContentUpdated(true);
-    setContent(event.target.value);
-  };
-
-  const updateNoteTags = (noteCopy) => {
-    const tagsToRemove = difference(
-      noteCopy.tags.map((tag) => tag.id),
-      noteCopy.activeTagIds
-    );
-    const tagsToAdd = difference(
-      noteCopy.activeTagIds,
-      noteCopy.tags.map((tag) => tag.id)
-    );
-
-    // foreach updatedTagId POST
-    tagsToAdd.forEach((tagId) => {
-      const newNoteTag = {
-        tagId: tagId,
-        noteId: noteCopy.id,
-      };
-      addNoteTag(newNoteTag);
-    });
-    tagsToRemove.forEach((tagId) => {
-      const newNoteTag = {
-        tagId: tagId,
-        noteId: noteCopy.id,
-      };
-      removeNoteTag(newNoteTag);
-    });
-  };
-
-  useEffect(() => {
-    const rowlen = typeof content == "string" ? content.split("\n") : 0;
-
-    setTextAreaRowCount(Math.max(rowlen.length, minTextAreaRowCount));
-  }, [content]);
-
-  useEffect(() => {
-    // set isContentUpdated if there is a change in active tags
-    if (
-      !isEqual(
-        note.tags.map((tag) => tag.id),
-        note.activeTagIds
-      )
-    ) {
-      setAreTagsUpdated(true);
-    }
-  }, [note]);
-
-  useEffect(() => {
-    if (shouldUpdateNoteContent && (isContentUpdated || areTagsUpdated)) {
-      let noteCopy = { ...note };
-      noteCopy.content = content;
-
-      if (areTagsUpdated) {
-        updateNoteTags(noteCopy);
-      }
-      if (isContentUpdated) {
-        updateNote(noteCopy);
-      }
-    }
-  }, [shouldUpdateNoteContent]);
 
   const handleRoute = () => {
     history.push(`/notes/${note.id}`);
@@ -98,7 +15,14 @@ function NoteStub({
     <div className="noteList-item">
       <ListItem button dense onClick={handleRoute}>
         <div className="noteList__body--stub">
-          <div>{stubContent(content)}</div>
+          <div className="noteList-stub--content" style={{ whiteSpace: "pre" }}>
+            {stubContent(note.content)}
+          </div>
+          <div className="noteList-stub--tags">
+            {note.tags.map((tag) => (
+              <div>#{tag.name}</div>
+            ))}
+          </div>
         </div>
       </ListItem>
     </div>

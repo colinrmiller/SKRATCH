@@ -72,7 +72,36 @@ export const formatDate = (dateTime) => {
 
 export const stubContent = (content) => {
   const STUB_VIEW_CONTENT_LENGTH = 60;
-  if (content.length > STUB_VIEW_CONTENT_LENGTH) {
-    return `${content.slice(0, STUB_VIEW_CONTENT_LENGTH)}...`;
-  } else return content;
+  const cleanContent = content.replace(/\\n/g, "\n");
+  const cleanContentFirstLine = cleanContent.split("\n")[0];
+
+  if (cleanContentFirstLine.length > STUB_VIEW_CONTENT_LENGTH) {
+    return `${cleanContentFirstLine.slice(0, STUB_VIEW_CONTENT_LENGTH)}...`;
+  } else return cleanContentFirstLine.replace(/\\\\/g, "\\");
+};
+
+export const cleanContent = (content) => {
+  const cleanContent = content.replace(/\\n/g, "\n");
+  return cleanContent;
+};
+
+export const cleanPriorityCard = (content) => {
+  const STUB_VIEW_CONTENT_LENGTH = 60;
+
+  const stubLine = (line) => {
+    if (line.length < STUB_VIEW_CONTENT_LENGTH) return [line];
+    else {
+      const head = line.slice(0, STUB_VIEW_CONTENT_LENGTH);
+      const tail = line.slice(0, STUB_VIEW_CONTENT_LENGTH);
+      return [head, ...stubLine(tail)];
+    }
+  };
+
+  const cleanContent = content.replace(/\\n/g, "\n");
+  const cleanContentLines = cleanContent.split("\n");
+  const cleanContentStub = cleanContentLines.reduce((acc, line) => {
+    return [...acc, ...stubLine(line)];
+  });
+
+  return cleanContentStub.slice(0, 4).join("\n");
 };

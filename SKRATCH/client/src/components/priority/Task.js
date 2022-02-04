@@ -25,7 +25,7 @@ function Task({ item, index, droppableId }) {
     >
       {(provided, snapshot) => (
         <div
-          ref={provided.innerRef}
+          // ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           style={getItemStyle(
