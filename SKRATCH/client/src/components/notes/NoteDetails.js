@@ -48,9 +48,6 @@ function NoteDetails() {
 
   return (
     <div className="note-details-container">
-      <div className="notes-container--interaction">
-        {/* <button onClick={handleUpdateNote}>Update</button> */}
-      </div>
       <NoteList notes={note} shouldUpdateNotes={shouldUpdateNote} />
       <div className="note-details__aside">
         {note.length > 0 ? <TagView note={note[0]} setNote={setNote} /> : null}

@@ -14,9 +14,9 @@ insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime,
 set identity_insert [User] off
 
 set identity_insert [Note] on
-insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsStaged) values (1, 'First Note', 1, '2020-05-19','2020-05-19',null,null, 1);
-insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsStaged) values (2, 'First Event\n - bring a chair', 1, '2020-05-19','2020-05-19','2022-02-03','2020-02-04', 1);
-insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsStaged) values (3, 'Second Event', 1, '2020-05-19','2020-05-19','2022-02-02','2020-02-04', 0);
+insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsParent) values (1, 'First Note', 1, '2020-05-19','2020-05-19',null,null, 1);
+insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsParent) values (2, 'First Event\n - bring a chair', 1, '2020-05-19','2020-05-19','2022-02-03','2020-02-04', 1);
+insert into [Note] (Id, Content, UserId, DateAdded, DateUpdated, DateStart, DateEnd, IsParent) values (3, 'Second Event', 1, '2020-05-19','2020-05-19','2022-02-02','2020-02-04', 0);
 set identity_insert [Note] off
 
 set identity_insert [NoteTag] on

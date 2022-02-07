@@ -42,7 +42,7 @@ CREATE TABLE [Note] (
   [DateUpdated] datetime,
   [DateStart] datetime,
   [DateEnd] datetime,
-  [IsStaged] bit NOT NULL,
+  [IsParent] bit NOT NULL,
   [MetaData] nvarchar(255),
 
   CONSTRAINT [FK_Note_User] FOREIGN KEY ([UserId]) REFERENCES [User] ([Id]),

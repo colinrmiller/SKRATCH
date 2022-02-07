@@ -3,6 +3,7 @@ import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import { useHistory, Link } from "react-router-dom";
 import { login, logout } from "../modules/authManager";
 import { getUserTags } from "../modules/TagManager";
+import "./ApplicationView.css";
 
 function Search() {
   const history = useHistory();
@@ -21,21 +22,12 @@ function Search() {
 
   return (
     <div className="search">
-      <Form onSubmit={submitSearch}>
-        <fieldset>
-          <FormGroup>
-            <Input
-              id="query"
-              type="text"
-              autoFocus
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Button>Search</Button>
-          </FormGroup>
-        </fieldset>
-      </Form>
+      <Input
+        id="query"
+        type="text"
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <Button onClick={submitSearch}>Search</Button>
     </div>
   );
 }

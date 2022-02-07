@@ -104,14 +104,6 @@ function NotesDisplay() {
         setIsNewNoteSubmitted={setIsNewNoteSubmitted}
         // noteIndex={notes.length}
       /> */}
-      <div className="notes-container--interaction">
-        <button onClick={handleupdateOrDeleteNotes}>Update</button>
-        {isDisplayingNewNote ? (
-          <button onClick={handleNewNoteCancel}>Cancel</button>
-        ) : (
-          <button onClick={handleNewNote}>New Note</button>
-        )}
-      </div>
     </div>
   );
 }

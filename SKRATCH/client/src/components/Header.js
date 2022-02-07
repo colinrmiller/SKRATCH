@@ -10,7 +10,9 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
+import Search from "./Search";
 import { logout } from "../modules/authManager";
+import "./ApplicationView.css";
 
 export default function Header({ isLoggedIn }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,9 +32,9 @@ export default function Header({ isLoggedIn }) {
             {isLoggedIn && (
               <>
                 <NavItem>
-                  <NavLink tag={RRNavLink} to="/notes">
+                  {/* <NavLink tag={RRNavLink} to="/notes">
                     Notes
-                  </NavLink>
+                  </NavLink> */}
                 </NavItem>
               </>
             )}
@@ -40,6 +42,7 @@ export default function Header({ isLoggedIn }) {
           <Nav navbar>
             {isLoggedIn && (
               <>
+                <Search />
                 <NavItem>
                   <div
                     aria-current="page"

@@ -48,14 +48,6 @@ function TagDisplay() {
         isDisplaying={isDisplayingNewNote}
         shouldSubmit={shouldUpdateNotes}
       />
-      <div className="notes-container--interaction">
-        <button onClick={handleUpdateNotes}>Update</button>
-        {isDisplayingNewNote ? (
-          <button onClick={handleNewNoteCancel}>Cancel</button>
-        ) : (
-          <button onClick={handleNewNote}>New Note</button>
-        )}
-      </div>
     </div>
   );
 }

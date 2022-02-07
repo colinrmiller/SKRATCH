@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
-import SkratchPad from "./SkratchPad";
 import Sidebar from "./Sidebar";
-import TagSidebar from "./TagSidebar";
 import NotesDisplay from "./notes/NotesDisplay";
 import TagDisplay from "./tags/TagDisplay";
 import NoteDetails from "./notes/NoteDetails";
 import Agenda from "./agenda/Agenda";
 import "../App.css";
 
-const _dummySidebarData = [
-  { name: "SKRATCH_PAD", label: "SkratchPad", route: "/" },
+const sidebarLinks = [
+  { name: "Notes", label: "Notes", route: "/notes" },
   {
     name: "Agenda",
     label: "Agenda",
@@ -35,7 +33,7 @@ const _dummySidebarData = [
 ];
 
 const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
-  const [sidebarItems, setSidebarItems] = useState(_dummySidebarData);
+  const [sidebarItems, setSidebarItems] = useState(sidebarLinks);
 
   return (
     <main className="main">
@@ -49,7 +47,7 @@ const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
         </Route>
 
         <Route path="/" exact>
-          {isLoggedIn ? <></> : <Redirect to="/login" />}
+          {isLoggedIn ? <NotesDisplay /> : <Redirect to="/login" />}
         </Route>
         <Route path="/notes" exact>
           {isLoggedIn ? <NotesDisplay /> : <Redirect to="/login" />}
@@ -64,12 +62,7 @@ const ApplicationViews = ({ isLoggedIn, isAdmin }) => {
           {isLoggedIn ? <Agenda /> : <Redirect to="/login" />}
         </Route>
         <Route path="/priority" exact></Route>
-
-        {/* <Route path="/" exact>
-          <SkratchPad></SkratchPad>
-        </Route> */}
       </Switch>
-      {/* <TagSidebar /> */}
     </main>
   );
 };

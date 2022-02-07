@@ -2,3 +2,16 @@
   display: flex;
   flex-direction: row;
 }
+
+.search {
+  display: flex;
+  flex-direction: row;
+}
+
+.search>* {
+  margin: 5px
+}
+
+.navbar-nav {
+  justify-content: space-between;
+}
