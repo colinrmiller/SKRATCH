@@ -3,18 +3,21 @@ import { useHistory } from "react-router-dom";
 import ListItem from "@material-ui/core/ListItem";
 import { isEqual, difference } from "lodash";
 import "./notes.css";
-import { updateNote, updateNoteTags } from "../../modules/NoteManager";
+import {
+  updateOrDeleteNote,
+  updateExistingNoteTags,
+} from "../../modules/NoteManager";
 import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
 import { formatDate, cleanContent, isContentNull } from "../../utils/utils";
 import useDebounce from "../../utils/useDebounce";
 import { cloneDeep } from "lodash";
 import { addNote } from "../../modules/NoteManager";
 import { getUserTags, addTag } from "../../modules/TagManager";
-import { AddTagsToNoteObj } from "../../utils/utils";
-import { parseFilterOutTags } from "../../utils/parse";
+import { injectTagsIntoNote } from "../../utils/utils";
+import { parseFilterOutTagsFromNoteContent } from "../../utils/parse";
 import {
-  AddTagsAndReturnCreatedIds,
-  addNoteTagsForNote,
+  postNewTagsAndReturnCreatedIds,
+  injectNewlyAddedTagsIntoNote,
 } from "../../utils/tags";
 
 function NoteListItem({
@@ -22,9 +25,10 @@ function NoteListItem({
   depthStep = 10,
   depth = 0,
   route,
-  shouldUpdateNoteContent,
-  setShouldUpdateNoteList,
+  shouldupdateOrDeleteNoteContent,
+  setShouldupdateOrDeleteNoteList,
   setShouldReloadNotes,
+  setIsNewNoteSubmitted,
   index,
   lastItem,
 }) {
@@ -34,12 +38,16 @@ function NoteListItem({
   const minTextAreaRowCount = 3;
   const [textAreaRowCount, setTextAreaRowCount] = useState(minTextAreaRowCount);
 
+  const currentUserId = 1;
+
   const [content, setContent] = useState(note.content);
   const [isContentUpdated, setIsContentUpdated] = useState(false);
   const [isContentEmpty, setIsContentEmpty] = useState(false);
   const [areTagsUpdated, setAreTagsUpdated] = useState(false);
+  const [localNote, setLocalNote] = useState(cloneDeep(note));
 
   const debouncedContent = useDebounce(content, 500);
+  const debouncedNote = useDebounce(localNote, 500);
 
   const handleContentChange = (event) => {
     setIsContentUpdated(true);
@@ -73,16 +81,45 @@ function NoteListItem({
       noteCopy.content = content;
 
       if (areTagsUpdated) {
-        updateNoteTags(noteCopy);
+        updateExistingNoteTags(noteCopy);
       }
       if (isContentUpdated) {
-        updateNote(noteCopy);
+        updateOrDeleteNote(noteCopy);
       }
       if (isContentNull(noteCopy.content)) {
         setShouldReloadNotes(true);
       }
     }
   }, [debouncedContent]);
+
+  const clearNote = () => {
+    setLocalNote({ userId: currentUserId, content: "" });
+  };
+
+  // submit note on shouldSubmit=true
+  useEffect(() => {
+    if (!isContentNull(note.content)) {
+      // if submiting
+      getUserTags(currentUserId)
+        .then((existingUserTags) => {
+          const noteCopy = injectTagsIntoNote(note, existingUserTags);
+          const newTags = noteCopy.tags.filter((tag) => tag.id === -1);
+
+          const promisesToAddTags = postNewTagsAndReturnCreatedIds(
+            newTags,
+            noteCopy
+          );
+
+          return Promise.all(promisesToAddTags).then((addedTags) => {
+            injectNewlyAddedTagsIntoNote(addedTags, noteCopy);
+          });
+        })
+        .then(() => {
+          clearNote();
+          setIsNewNoteSubmitted(true);
+        });
+    }
+  }, [debouncedNote]);
 
   useEffect(() => {
     const input = document.getElementById(`noteList-item--${index}`);

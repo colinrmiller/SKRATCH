@@ -40,7 +40,6 @@ export const login = (email, pw) => {
     .auth()
     .signInWithEmailAndPassword(email, pw)
     .then((signInResponse) => {
-      debugger;
       return _doesUserExist(signInResponse.user.uid);
     })
     .then((doesUserExist) => {

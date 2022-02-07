@@ -12,6 +12,7 @@ function NoteList({
   depth,
   shouldUpdateNotes,
   setShouldReloadNotes,
+  setNoteByIndex,
 }) {
   return (
     <div className="notelist">
@@ -25,6 +26,7 @@ function NoteList({
             route={note.route}
             shouldUpdateNoteContent={shouldUpdateNotes}
             setShouldReloadNotes={setShouldReloadNotes}
+            setNoteByIndex={setNoteByIndex}
             index={index}
             lastItem={index === notes.length - 1}
             {...note}

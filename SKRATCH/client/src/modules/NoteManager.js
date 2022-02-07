@@ -1,4 +1,4 @@
-import { ParseNoteTags, isContentNull } from "../utils/utils";
+import { findTagsInNote, isContentNull } from "../utils/utils";
 import { addNoteTag, removeNoteTag } from "./TagManager";
 import { difference } from "lodash";
 
@@ -18,7 +18,7 @@ export const getNoteById = (noteId) => {
   return fetch(`${baseUrl}/${noteId}`).then((res) => res.json());
 };
 
-export const updateNote = (note) => {
+export const updateOrDeleteNote = (note) => {
   if (isContentNull(note.content)) {
     return fetch(`${baseUrl}/${note.id} `, {
       method: "DELETE",
@@ -38,7 +38,7 @@ export const updateNote = (note) => {
   }
 };
 
-export const updateNoteTags = (note) => {
+export const updateExistingNoteTags = (note) => {
   const currentTags = note.tags.map((tag) => tag.id);
   const updatedTags = note.activeTagIds;
 
@@ -62,10 +62,14 @@ export const updateNoteTags = (note) => {
 };
 
 export const addNote = (note) => {
-  const noteCopy = { ...note };
-  noteCopy.content = noteCopy.content += "\n";
+  const noteCopy = {
+    content: note.content,
+    userId: note.userId,
+    isStaged: true,
+    metaData: "{}",
+  };
 
-  const noteTags = ParseNoteTags(noteCopy.content);
+  noteCopy.content = noteCopy.content += "\n";
 
   return fetch(baseUrl, {
     method: "POST",

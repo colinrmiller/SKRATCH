@@ -1,8 +1,9 @@
 import { addTag, addNoteTag } from "../modules/TagManager";
 import { addNote } from "../modules/NoteManager";
-import { parseFilterOutTags } from "./parse";
+import { parseFilterOutTagsFromNoteContent } from "./parse";
+import { cloneDeep } from "lodash";
 
-export const AddTagsAndReturnCreatedIds = (newTagList, note) => {
+export const postNewTagsAndReturnCreatedIds = (newTagList, note) => {
   return newTagList.map(
     (tag) =>
       new Promise((resolve, reject) => {
@@ -21,29 +22,36 @@ export const AddTagsAndReturnCreatedIds = (newTagList, note) => {
   );
 };
 
-export const addNoteTagsForNote = (addedTags, newNote) => {
-  const noteWithUpdatedTagIds = [];
+// export const updateMissingTagIdsWithNewTags = (note, newTags);
+
+export const injectNewlyAddedTagsIntoNote = (addedTags, newNote) => {
+  const updatedTags = [];
+
+  let noteClone = cloneDeep(newNote);
 
   // update note.tags with Ids for ones just created
-  newNote.tags.forEach((tag) => {
+  noteClone.tags.forEach((tag) => {
     const tagIndex = addedTags
       .map((addedTag) => addedTag.name)
       .indexOf(tag.name);
-    if (tagIndex === -1) noteWithUpdatedTagIds.push(tag);
+    if (tagIndex === -1) updatedTags.push(tag);
     else {
       tag.id = addedTags[tagIndex].id;
-      noteWithUpdatedTagIds.push(tag);
+      updatedTags.push(tag);
     }
   });
 
-  newNote = parseFilterOutTags(newNote);
+  noteClone.tags = updatedTags;
+  // newNote = parseFilterOutTagsFromNoteContent(newNote);
 
-  if (newNote)
-    return addNote(newNote).then((noteId) => {
-      // POST noteTags for note
-      newNote.tags.forEach((noteTag) => {
-        const newNoteTag = { noteId: noteId, tagId: noteTag.id };
-        addNoteTag(newNoteTag);
-      });
-    });
+  return noteClone;
+
+  // if (newNote)
+  //   return addNote(newNote).then((noteId) => {
+  //     // POST noteTags for note
+  //     newNote.tags.forEach((noteTag) => {
+  //       const newNoteTag = { noteId: noteId, tagId: noteTag.id };
+  //       addNoteTag(newNoteTag);
+  //     });
+  //   });
 };

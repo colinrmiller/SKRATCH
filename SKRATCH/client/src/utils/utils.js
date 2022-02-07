@@ -4,7 +4,7 @@ export const isContentNull = (content) => {
   return content.trim() === "";
 };
 
-export const ParseNoteTags = (noteContent) => {
+export const findTagsInNote = (noteContent) => {
   const regex = /(?:#)\w*(?=[\s\\])/g;
   const matches = [...noteContent.matchAll(regex)];
 
@@ -13,61 +13,64 @@ export const ParseNoteTags = (noteContent) => {
   return tags;
 };
 
-export const AddTagsToNoteObj = (note, existingUserTags) => {
+export const injectTagsIntoNote = (note, existingUserTags) => {
   const noteCopy = cloneDeep(note);
-  noteCopy.content = noteCopy.content += "\n";
+  const noteTags = findTagsInNote(noteCopy.content);
 
-  const noteTags = ParseNoteTags(noteCopy.content);
+  noteCopy.tags = [
+    ...noteCopy.tags,
+    ...noteTags.map((tag) => {
+      const existingTag = existingUserTags.filter((t) => {
+        return t.name.toLowerCase() === tag.toLowerCase();
+      });
 
-  noteCopy.tags = noteTags.map((tag) => {
-    const existingTag = existingUserTags.filter((t) => {
-      return t.name.toLowerCase() === tag.toLowerCase();
-    });
-
-    return {
-      name: tag,
-      id: existingTag.length > 0 ? existingTag[0].id : -1,
-    };
-  });
+      return {
+        name: tag,
+        id: existingTag.length > 0 ? existingTag[0].id : -1,
+      };
+    }),
+  ];
 
   return noteCopy;
 };
 
 export const formatDate = (dateTime) => {
-  var year = dateTime.split("-")[0];
-  var month = dateTime.split("-")[1];
-  var day = dateTime.split("-")[2].slice(0, 2);
+  if (dateTime) {
+    var year = dateTime.split("-")[0];
+    var month = dateTime.split("-")[1];
+    var day = dateTime.split("-")[2].slice(0, 2);
 
-  const nth = function (d) {
-    if (d > 3 && d < 21) return "th";
+    const nth = function (d) {
+      if (d > 3 && d < 21) return "th";
 
-    switch (d % 10) {
-      case 1:
-        return "st";
-      case 2:
-        return "nd";
-      case 3:
-        return "rd";
-      default:
-        return "th";
-    }
-  };
+      switch (d % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
 
-  var date = new Date(year, month, day);
+    var date = new Date(year, month, day);
 
-  const ye = new Intl.DateTimeFormat("en", {
-    year: "numeric",
-  }).format(date);
+    const ye = new Intl.DateTimeFormat("en", {
+      year: "numeric",
+    }).format(date);
 
-  const mo = new Intl.DateTimeFormat("en", {
-    month: "short",
-  }).format(date);
+    const mo = new Intl.DateTimeFormat("en", {
+      month: "short",
+    }).format(date);
 
-  const da = new Intl.DateTimeFormat("en", {
-    day: "numeric",
-  }).format(date);
+    const da = new Intl.DateTimeFormat("en", {
+      day: "numeric",
+    }).format(date);
 
-  return `${mo} ${da}${nth(da)} ${ye}  `;
+    return `${mo} ${da}${nth(da)} ${ye}  `;
+  }
 };
 
 export const stubContent = (content) => {

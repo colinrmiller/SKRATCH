@@ -11,7 +11,7 @@ import {
   getUserNotes,
   getUpcomingUserNotes,
   updateNote,
-  updateNoteTags,
+  updateExistingNoteTags,
 } from "../../modules/NoteManager";
 import { getPriorities } from "../../modules/TagManager";
 
@@ -84,7 +84,7 @@ function Agenda() {
       setNotes(updatedNotes);
 
       // updateNote(noteToUpdate);
-      updateNoteTags(noteToUpdate);
+      updateExistingNoteTags(noteToUpdate);
     }
   }, [updateInstructions]);
 

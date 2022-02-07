@@ -3,6 +3,8 @@ import { useHistory, useParams } from "react-router-dom";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import ReactMarkdown from "react-markdown";
+import ReactDom from "react-dom";
 import "./notes.css";
 
 import { getNoteById } from "../../modules/NoteManager";
@@ -10,6 +12,7 @@ import NoteList from "./NoteList";
 import TagView from "../tags/TagView";
 import TagSelectDropdown from "../tags/TagSelectDropdown";
 import DateSelect from "../tags/DateSelect";
+import useDebounce from "../../utils/useDebounce";
 
 function NoteDetails() {
   const { id } = useParams();
@@ -17,6 +20,8 @@ function NoteDetails() {
   const [note, setNote] = useState([]);
   const [shouldUpdateNote, setShouldUpdateNote] = useState(false);
   const [activeTagIds, setActiveTags] = useState(false);
+
+  const debouncedNote = useDebounce(note, 500);
 
   const getNote = () => {
     getNoteById(id).then((res) => {
@@ -32,16 +37,19 @@ function NoteDetails() {
     getNote();
   }, []);
 
-  // TODO Fix only working on every other submit
-  const handleUpdateNote = (event) => {
-    event.preventDefault();
-    setShouldUpdateNote((value) => !value);
-  };
+  // const handleUpdateNote = (event) => {
+  //   event.preventDefault();
+  //   setShouldUpdateNote((value) => !value);
+  // };
+
+  useEffect(() => {
+    setShouldUpdateNote(true);
+  }, [debouncedNote]);
 
   return (
     <div className="note-details-container">
       <div className="notes-container--interaction">
-        <button onClick={handleUpdateNote}>Update</button>
+        {/* <button onClick={handleUpdateNote}>Update</button> */}
       </div>
       <NoteList notes={note} shouldUpdateNotes={shouldUpdateNote} />
       <div className="note-details__aside">

@@ -5,7 +5,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { isEqual, difference } from "lodash";
 import "../notes/notes.css";
-import { updateNote } from "../../modules/NoteManager";
+import { updateOrDeleteNote } from "../../modules/NoteManager";
 import { addNoteTag, removeNoteTag } from "../../modules/TagManager";
 import { formatDate } from "../../utils/utils";
 
@@ -85,7 +85,7 @@ function AgendaItem({
         updateNoteTags(noteCopy);
       }
       if (isContentUpdated) {
-        updateNote(noteCopy);
+        updateOrDeleteNote(noteCopy);
       }
     }
   }, [shouldUpdateNoteContent]);

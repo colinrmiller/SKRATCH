@@ -36,7 +36,7 @@ GO
 
 CREATE TABLE [Note] (
   [Id] int PRIMARY KEY IdENTITY(1, 1),
-  [Content] nvarchar(255) NOT NULL,
+  [Content] nvarchar(max) NOT NULL,
   [UserId] int NOT NULL,
   [DateAdded] datetime NOT NULL,
   [DateUpdated] datetime,

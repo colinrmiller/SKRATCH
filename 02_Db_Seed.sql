@@ -10,7 +10,7 @@ set identity_insert [Tag] off
 
 set identity_insert [User] on
 insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (1, 'colinraymiller', 'Colin', 'miller', 'colinraymiller@gmail.com', '2020-04-20','ve7miQcU6RfWjIkYMoxVXAzcvnU2');
-insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (1, 'admin', 'Admin', 'miller', 'admin@example.com', '2020-04-20','hVYU8fsZQ6TLJHKkifh5o7b3FIC3');
+insert into [User] (Id, DisplayName, FirstName, LastName, Email, CreateDateTime, FirebaseUserId) values (2,  'admin', 'Admin', 'miller', 'admin@example.com', '2020-04-20','hVYU8fsZQ6TLJHKkifh5o7b3FIC3');
 set identity_insert [User] off
 
 set identity_insert [Note] on

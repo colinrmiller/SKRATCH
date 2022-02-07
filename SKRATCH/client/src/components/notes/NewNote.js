@@ -1,31 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import { cloneDeep } from "lodash";
 import "./notes.css";
 import { addNote } from "../../modules/NoteManager";
 import { getUserTags, addTag, addNoteTag } from "../../modules/TagManager";
-import { isContentNull, AddTagsToNoteObj } from "../../utils/utils";
-import { parseFilterOutTags } from "../../utils/parse";
+import { isContentNull, injectTagsIntoNote } from "../../utils/utils";
+import { cleanNoteContent } from "../../utils/parse";
 import {
-  AddTagsAndReturnCreatedIds,
-  addNoteTagsForNote,
+  postNewTagsAndReturnCreatedIds,
+  injectNewlyAddedTagsIntoNote,
 } from "../../utils/tags";
 import useDebounce from "../../utils/useDebounce";
 
-function NewNote({ setIsNewNoteSubmitted }) {
-  const currentUserId = 1; // TODO
+const currentUserId = 1; // TODO
 
+function NewNote({ setIsNewNoteSubmitted }) {
   const [note, setNote] = useState({ userId: currentUserId, content: "" });
 
   const debouncedNote = useDebounce(note, 500);
 
-  const handleUpdateNoteContent = (event) => {
-    let noteCopy = { ...note };
-    noteCopy.content = event.target.value;
-    setNote(noteCopy);
+  const handleupdateOrDeleteNoteContent = (event) => {
+    let noteClone = cloneDeep(note);
+    noteClone.content = event.target.value;
+    setNote(noteClone);
+  };
+
+  const clearNote = () => {
+    setNote({ userId: currentUserId, content: "" });
+  };
+
+  const createNoteTag = (noteId, noteTag) => {
+    const preparedNoteTag = { noteId: noteId, tagId: noteTag.id };
+    addNoteTag(preparedNoteTag);
+  };
+
+  const createEachNoteTag = (preparedNote, noteId) => {
+    // POST noteTags for note
+    preparedNote.tags.forEach((tag) => createNoteTag(tag).bind(this, noteId));
+  };
+
+  const prepareNote = (addedTags, noteCopy) => {
+    let preparedNote = injectNewlyAddedTagsIntoNote(addedTags, noteCopy);
+    preparedNote = cleanNoteContent(preparedNote);
+    return preparedNote;
+  };
+
+  // postTag().then(postNote().then(postNoteTag()))
+  const submitNoteAndTags = (note) => {
+    getUserTags(currentUserId)
+      .then((existingUserTags) => {
+        const noteCopy = injectTagsIntoNote(note, existingUserTags);
+        const newTags = noteCopy.tags.filter((tag) => tag.id === -1);
+
+        const promisesToAddTags = postNewTagsAndReturnCreatedIds(
+          newTags,
+          noteCopy
+        );
+
+        return Promise.all(promisesToAddTags).then((addedTags) => {
+          const preparedNote = prepareNote(addedTags, noteCopy);
+
+          return addNote(preparedNote).then(
+            createEachNoteTag.bind(preparedNote)
+          );
+        });
+      })
+      .then(() => {
+        clearNote();
+        setIsNewNoteSubmitted(true);
+      });
   };
 
   // update textarea rowlength
@@ -39,32 +82,12 @@ function NewNote({ setIsNewNoteSubmitted }) {
     setTextAreaRowCount(Math.max(textRowLen.length, minTextAreaRowCount));
   }, [note.content]);
 
-  const clearNote = () => {
-    setNote({ userId: currentUserId, content: "" });
-  };
-
   // submit note on shouldSubmit=true
   useEffect(() => {
     if (!isContentNull(note.content)) {
       // if submiting
-      getUserTags(currentUserId)
-        .then((existingUserTags) => {
-          const noteCopy = AddTagsToNoteObj(note, existingUserTags);
-          const newTags = noteCopy.tags.filter((tag) => tag.id === -1);
 
-          const promisesToAddTags = AddTagsAndReturnCreatedIds(
-            newTags,
-            noteCopy
-          );
-
-          return Promise.all(promisesToAddTags).then((addedTags) => {
-            addNoteTagsForNote(addedTags, noteCopy);
-          });
-        })
-        .then(() => {
-          clearNote();
-          setIsNewNoteSubmitted(true);
-        });
+      submitNoteAndTags(note);
     }
   }, [debouncedNote]);
 
@@ -75,7 +98,7 @@ function NewNote({ setIsNewNoteSubmitted }) {
           value={note.content}
           className="noteList-item--text"
           rows={textAreaRowCount}
-          onChange={handleUpdateNoteContent}
+          onChange={handleupdateOrDeleteNoteContent}
         />
       </ListItem>
     </div>

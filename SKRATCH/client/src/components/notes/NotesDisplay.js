@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+// import { useHistory } from "react-router-dom";
+// import List from "@material-ui/core/List";
+// import ListItem from "@material-ui/core/ListItem";
+// import ListItemText from "@material-ui/core/ListItemText";
+import { cloneDeep } from "lodash";
 import "./notes.css";
 
 import { getUserNotes } from "../../modules/NoteManager";
 import NoteList from "./NoteList";
-import NewNote from "./NewNote";
+// import NewNote from "./NewNote";
 
 function NotesDisplay() {
   const [notes, setNotes] = useState([]);
-  const [shouldUpdateNotes, setShouldUpdateNotes] = useState(false);
+  const [shouldupdateOrDeleteNotes, setShouldupdateOrDeleteNotes] =
+    useState(false);
   const [isDisplayingNewNote, setIsDisplayingNewNote] = useState(false);
   const [isNewNoteSubmitted, setIsNewNoteSubmitted] = useState(false);
   const [shouldReloadNotes, setShouldReloadNotes] = useState(false);
-  const currentUser = 1;
+  // const [shouldPushNewNote, setShouldPushNewNote] = useState(false);
+  const currentUserId = 1;
+
+  const pushNewNote = () => {
+    const notesClone = cloneDeep(notes);
+    const emptyNote = {
+      id: -1,
+      content: "",
+      dateAdded: null,
+      dateUpdated: null,
+      userId: currentUserId,
+      user: null,
+      isStaged: false,
+      metaData: null,
+      tags: [],
+      dateStart: null,
+      dateEnd: null,
+      activeTagIds: [],
+    };
+    notesClone.push(emptyNote);
+    return notesClone;
+  };
 
   const getNotes = () => {
     const AddActiveTagIdsToNote = (note) => {
@@ -23,12 +46,20 @@ function NotesDisplay() {
       note.activeTagIds = activeTagIds;
       return note;
     };
-    getUserNotes(currentUser).then((res) => {
+
+    getUserNotes(currentUserId).then((res) => {
       const notesWithActiveTagIds = res.map((note) =>
         AddActiveTagIdsToNote(note)
       );
+
       setNotes(notesWithActiveTagIds);
     });
+  };
+
+  const setNoteByIndex = (index, note) => {
+    let notesClone = cloneDeep(notes);
+    notesClone[index] = note;
+    setNotes(notesClone);
   };
 
   useEffect(() => {
@@ -36,9 +67,9 @@ function NotesDisplay() {
     setIsNewNoteSubmitted(false);
   }, [isNewNoteSubmitted, shouldReloadNotes]);
 
-  const handleUpdateNotes = (event) => {
+  const handleupdateOrDeleteNotes = (event) => {
     event.preventDefault();
-    setShouldUpdateNotes((value) => !value);
+    setShouldupdateOrDeleteNotes((value) => !value);
   };
 
   const handleNewNote = () => {
@@ -49,23 +80,32 @@ function NotesDisplay() {
     setIsDisplayingNewNote(false);
   };
 
+  useEffect(() => {
+    if (notes[notes.length - 1]?.id !== -1) {
+      let notesCopy = cloneDeep(notes);
+      notesCopy = pushNewNote(notesCopy);
+      setNotes(notesCopy);
+    }
+  }, [notes]);
+
   useEffect(() => {});
 
   return (
     <div className="notes-container">
       <NoteList
         notes={notes}
-        shouldUpdateNotes={shouldUpdateNotes}
+        shouldupdateOrDeleteNotes={shouldupdateOrDeleteNotes}
         setShouldReloadNotes={setShouldReloadNotes}
+        setNoteByIndex={setNoteByIndex}
       />
-      <NewNote
+      {/* <NewNote
         isDisplaying={true}
-        shouldSubmit={shouldUpdateNotes}
+        shouldSubmit={shouldupdateOrDeleteNotes}
         setIsNewNoteSubmitted={setIsNewNoteSubmitted}
         // noteIndex={notes.length}
-      />
+      /> */}
       <div className="notes-container--interaction">
-        <button onClick={handleUpdateNotes}>Update</button>
+        <button onClick={handleupdateOrDeleteNotes}>Update</button>
         {isDisplayingNewNote ? (
           <button onClick={handleNewNoteCancel}>Cancel</button>
         ) : (
